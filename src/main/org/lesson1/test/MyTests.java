@@ -20,8 +20,13 @@ public class MyTests {
     }
 
     @BeforeTest
-    public void beforeEach() {
-        System.out.println("\nBeforeTest: перед каждым тестом");
+    public void firstBeforeEach() {
+        System.out.println("\nBeforeTest 1: перед каждым тестом");
+    }
+
+    @BeforeTest
+    public void secondBeforeEach() {
+        System.out.println("BeforeTest 2: перед каждым тестом");
     }
 
     @AfterTest

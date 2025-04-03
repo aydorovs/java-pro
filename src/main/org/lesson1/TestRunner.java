@@ -9,6 +9,7 @@ import org.lesson1.annotation.Test;
 import org.lesson1.test.MyTests;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,19 +18,19 @@ public class TestRunner {
     public static void runTests(Class<?> currentClass) throws Exception {
         Method beforeSuite = null;
         Method afterSuite = null;
-        Method beforeTest = null;
-        Method afterTest = null;
+        List<Method> beforeTestMethods = new ArrayList<>();
+        List<Method> afterTestMethods = new ArrayList<>();
         List<Method> testMethods = new ArrayList<>();
 
         for (Method method : currentClass.getDeclaredMethods()) {
-            if (method.isAnnotationPresent(BeforeSuite.class)) {
+            if (method.isAnnotationPresent(BeforeSuite.class) && Modifier.isStatic(method.getModifiers())) {
                 // Проверяем что только один раз инициализируем beforeSuite
                 if (beforeSuite != null) {
                     throw new RuntimeException("Должен быть только один метод с @BeforeSuite");
                 }
                 beforeSuite = method;
             }
-            if (method.isAnnotationPresent(AfterSuite.class)) {
+            if (method.isAnnotationPresent(AfterSuite.class) && Modifier.isStatic(method.getModifiers())) {
                 // Проверяем что только один раз инициализируем afterSuite
                 if (afterSuite != null) {
                     throw new RuntimeException("Должен быть только один метод с @AfterSuite");
@@ -37,10 +38,10 @@ public class TestRunner {
                 afterSuite = method;
             }
             if (method.isAnnotationPresent(BeforeTest.class)) {
-                beforeTest = method;
+                beforeTestMethods.add(method);
             }
             if (method.isAnnotationPresent(AfterTest.class)) {
-                afterTest = method;
+                afterTestMethods.add(method);
             }
             if (method.isAnnotationPresent(Test.class)) {
                 Test annotation = method.getAnnotation(Test.class);
@@ -65,7 +66,11 @@ public class TestRunner {
         Object instance = currentClass.getDeclaredConstructor().newInstance();
 
         for (Method testMethod : testMethods) {
-            if (beforeTest != null) beforeTest.invoke(instance);
+            if (!beforeTestMethods.isEmpty()) {
+                for (Method beforeTestMethod : beforeTestMethods) {
+                    beforeTestMethod.invoke(instance);
+                }
+            }
 
             if (testMethod.isAnnotationPresent(CsvSource.class)) {
                 String[] params = testMethod.getAnnotation(CsvSource.class).value().split(",\\s*");
@@ -82,7 +87,11 @@ public class TestRunner {
                 testMethod.invoke(instance);
             }
 
-            if (afterTest != null) afterTest.invoke(instance);
+            if (!afterTestMethods.isEmpty()) {
+                for (Method afterTestMethod : afterTestMethods) {
+                    afterTestMethod.invoke(instance);
+                }
+            }
         }
 
         if (afterSuite != null) afterSuite.invoke(null);
