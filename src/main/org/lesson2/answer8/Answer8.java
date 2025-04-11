@@ -6,9 +6,6 @@ import java.util.Comparator;
 
 public class Answer8 {
 
-    private Answer8() {
-    }
-
     public static String searchLargestWord(String[] words) {
         return Arrays.stream(words)
                 .flatMap(s -> Arrays.stream(s.split("\\s+")))

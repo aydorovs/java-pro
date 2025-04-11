@@ -6,10 +6,6 @@ import java.util.List;
 
 public class Answer7 {
 
-
-    private Answer7() {
-    }
-
     public static void sort(List<String> strings) {
         strings.stream()
                 .sorted(Comparator.comparingInt(String::length).thenComparing(Comparator.naturalOrder()))

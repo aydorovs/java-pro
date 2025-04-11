@@ -7,9 +7,6 @@ import java.util.Optional;
 
 public class Answer5 {
 
-    private Answer5() {
-    }
-
     public static String searchMaxLengthWord(String[] words) {
         return Arrays.stream(
                         Optional.ofNullable(words)

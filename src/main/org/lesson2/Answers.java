@@ -24,7 +24,7 @@ public class Answers {
          * 1) Найдите в списке целых чисел 3-е наибольшее число (пример: 5 2 10 9 4 3 10 1 13 => 10)
          *
          * **/
-        int[] numbers1 = {5, 2, 10, 9, 4, 3, 10, 1, 13};
+        List<Integer> numbers1 = List.of(5, 2, 10, 9, 4, 3, 10, 1, 13);
         System.out.println("Задача 1. Ответ: " + Answer1.searchMaxThirdNumber(numbers1));
 
         /*
@@ -32,7 +32,7 @@ public class Answers {
          * в отличие от прошлой задачи здесь разные 10 считает за одно число)
          *
          * **/
-        int[] numbers2 = {5, 2, 10, 9, 4, 3, 10, 1, 13};
+        List<Integer> numbers2 = List.of(5, 2, 10, 9, 4, 3, 10, 1, 13);
         System.out.println("Задача 2. Ответ: " + Answer2.searchUniqueMaxThirdNumber(numbers2));
 
         /*
