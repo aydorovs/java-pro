@@ -3,6 +3,7 @@ package org.lesson3;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -12,7 +13,7 @@ public class MyThreadPool {
     private final List<Worker> workers = new ArrayList<>();
     private final ReentrantLock lock = new ReentrantLock();
     private final Condition taskAvailable = lock.newCondition();
-    private volatile boolean isShutdown = false;
+    private final AtomicBoolean isShutdown = new AtomicBoolean(false);
 
     public MyThreadPool(int poolSize) {
         for (int i = 0; i < poolSize; i++) {
@@ -25,7 +26,7 @@ public class MyThreadPool {
     public void execute(Runnable task) {
         lock.lock();
         try {
-            if (isShutdown) {
+            if (isShutdown.get()) {
                 throw new IllegalStateException("ThreadPool остановлен. Нет новых задач.");
             }
             taskQueue.add(task);
@@ -38,7 +39,7 @@ public class MyThreadPool {
     public void shutdown() {
         lock.lock();
         try {
-            isShutdown = true;
+            isShutdown.set(true);
             taskAvailable.signalAll();
         } finally {
             lock.unlock();
@@ -62,11 +63,11 @@ public class MyThreadPool {
 
                 lock.lock();
                 try {
-                    while (taskQueue.isEmpty() && !isShutdown) {
+                    while (taskQueue.isEmpty() && !isShutdown.get()) {
                         taskAvailable.await();
                     }
 
-                    if (taskQueue.isEmpty() && isShutdown) {
+                    if (taskQueue.isEmpty() && isShutdown.get()) {
                         break;
                     }
 
