@@ -1,41 +1,46 @@
 package org.lessons.lesson4.service;
 
-import org.lessons.lesson4.dao.UserDao;
-import org.lessons.lesson4.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.lessons.lesson4.entity.User;
+import org.lessons.lesson4.repository.UserRepository;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class UserService {
+public class UserService implements CommandLineRunner {
 
-    private final UserDao userDao;
+    private final UserRepository userRepository;
 
-    @Autowired
-    public UserService(UserDao userDao) {
-        this.userDao = userDao;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    public User createUser(String username) {
-        User user = new User();
-        user.setUsername(username);
-        return userDao.create(user);
-    }
+    @Override
+    public void run(String... args) {
+        System.out.println("\n----  Старт работы с пользователями ----");
 
-    public User getUserById(Long id) {
-        return userDao.findById(id);
-    }
+        User user1 = new User("Тест1");
+        userRepository.save(user1);
+        User user2 = new User("Тест2");
+        userRepository.save(user2);
+        User user3 = new User("Тест3");
+        userRepository.save(user3);
+        User user4 = new User("Тест4");
+        userRepository.save(user4);
 
-    public List<User> getAllUsers() {
-        return userDao.findAll();
-    }
+        User userExist = userRepository.findById(3L).orElseThrow();
+        System.out.println("---- Пользователь c id = 3 найден: " + userExist.getUsername());
 
-    public void updateUser(User user) {
-        userDao.update(user);
-    }
+        userRepository.deleteById(4L);
+        try {
+            userRepository.findById(4L).orElseThrow();
+        } catch (Exception e) {
+            System.out.println("---- Пользователь c id = 4 не найден");
+        }
 
-    public void deleteUser(Long id) {
-        userDao.delete(id);
+
+        List<User> allUsers = userRepository.findAll();
+        System.out.println("---- Найдено пользователей: \n" + allUsers.size());
     }
 }
