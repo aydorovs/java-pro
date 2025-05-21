@@ -1,48 +1,46 @@
 package org.lessons.lesson4.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.lessons.lesson4.entity.User;
+import org.lessons.lesson4.entity.UserEntity;
+import org.lessons.lesson4.mapper.UserMapper;
+import org.lessons.lesson4.model.UserDto;
 import org.lessons.lesson4.repository.UserRepository;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Slf4j
 @Service
-public class UserService implements CommandLineRunner {
+public class UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
-    @Override
-    public void run(String... args) {
-        log.info("\n----  Старт работы с пользователями ----");
+    public UserDto createUser(String userName) {
+        UserEntity userEntity = new UserEntity(userName);
+        UserEntity saved = userRepository.save(userEntity);
+        return userMapper.toUserDto(saved);
+    }
 
-        User user1 = new User("Тест1");
-        userRepository.save(user1);
-        User user2 = new User("Тест2");
-        userRepository.save(user2);
-        User user3 = new User("Тест3");
-        userRepository.save(user3);
-        User user4 = new User("Тест4");
-        userRepository.save(user4);
+    public List<UserDto> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(userMapper::toUserDto)
+                .toList();
+    }
 
-        User userExist = userRepository.findById(3L).orElseThrow();
-        log.info("---- Пользователь c id = 3 найден: " + userExist.getUsername());
+    public UserDto getUser(Long id) {
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found. id = " + id));
+        return userMapper.toUserDto(userEntity);
+    }
 
-        userRepository.deleteById(4L);
-        try {
-            userRepository.findById(4L).orElseThrow();
-        } catch (Exception e) {
-            log.info("---- Пользователь c id = 4 не найден");
-        }
-
-
-        List<User> allUsers = userRepository.findAll();
-        log.info("---- Найдено пользователей: \n" + allUsers.size());
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
     }
 }
