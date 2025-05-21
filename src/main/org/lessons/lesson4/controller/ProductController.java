@@ -2,7 +2,6 @@ package org.lessons.lesson4.controller;
 
 import org.lessons.lesson4.model.ProductDto;
 import org.lessons.lesson4.service.ProductService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,13 +38,12 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductDto>> getAllUProducts() {
-        return ResponseEntity.ok(productService.getAllUsers());
+    public List<ProductDto> getAllUProducts() {
+        return productService.getAllUsers();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable("id") Long id) {
+    public void deleteProduct(@PathVariable("id") Long id) {
         productService.deleteProduct(id);
-        return ResponseEntity.ok().build();
     }
 }

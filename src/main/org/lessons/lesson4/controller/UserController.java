@@ -3,7 +3,6 @@ package org.lessons.lesson4.controller;
 import org.lessons.lesson4.model.UserDto;
 import org.lessons.lesson4.model.UserRequest;
 import org.lessons.lesson4.service.UserService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,23 +24,22 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody UserRequest userRequest) {
-        return ResponseEntity.ok(userService.createUser(userRequest.userName()));
+    public UserDto createUser(@RequestBody UserRequest userRequest) {
+        return userService.createUser(userRequest.userName());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUser(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(userService.getUser(id));
+    public UserDto getUser(@PathVariable("id") Long id) {
+        return userService.getUser(id);
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    public List<UserDto> getAllUsers() {
+        return userService.getAllUsers();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
+    public void deleteUser(@PathVariable("id") Long id) {
         userService.deleteUser(id);
-        return ResponseEntity.ok().build();
     }
 }

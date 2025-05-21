@@ -35,8 +35,10 @@ public class ProductService {
     }
 
     public ProductDto getProductById(Long productId) {
-        ProductEntity productEntity = productRepository.findById(productId).orElse(null);
-        return productEntity != null ? productMapper.toProductDto(productEntity) : null;
+        ProductEntity productEntity = productRepository.findById(productId).orElseThrow(
+                () -> new EntityNotFoundException("Product does not exist. Please create new product")
+        );
+        return productMapper.toProductDto(productEntity);
     }
 
     public ProductDto createProduct(ProductDto productDto) {
@@ -45,12 +47,7 @@ public class ProductService {
                         () -> new EntityNotFoundException("User for this product does not exist. Please create new user")
                 );
 
-        ProductEntity productEntity = new ProductEntity();
-        productEntity.setId(productDto.id());
-        productEntity.setAccountNumber(productDto.accountNumber());
-        productEntity.setBalance(productDto.balance());
-        productEntity.setProductType(productDto.productType());
-        productEntity.setUser(userEntity);
+        ProductEntity productEntity = productMapper.toProductEntity(productDto, userEntity);
         return productMapper.toProductDto(productRepository.save(productEntity));
     }
 
