@@ -37,3 +37,5 @@ out/
 .vscode/
 .DS_Store
 /target/*
+/payment-service/target/**
+/product-service/target/**
